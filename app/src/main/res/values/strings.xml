@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">AndroidApp</string>
+    <string name="login_title">Medical Tablet System</string>
+    <string name="login_welcome">Welcome Back</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Connect to System</string>
+    
+    <!-- Scan Screen -->
+    <string name="scan_title">Scan Patient QR</string>
+    <string name="scan_instruction">Align code within frame</string>
+    <string name="manual_login">Manual Login</string>
+
+    <!-- Consultation Screen -->
+    <string name="initializing_core">Initializing AI Medical Core...</string>
+    <string name="secure_connection">Establishing Secure Connection</string>
+    <string name="session_timer">Session: %1$s</string>
+    <string name="end_session">End Session</string>
+    <string name="ai_welcome">"Hello %1$s. I am your AI Medical Assistant. I will guide you through a complete health check, starting with your symptoms."</string>
+    <string name="ai_symptom_start">I am ready. Please describe your symptoms.</string>
+    <string name="ai_vital_prompt">Please measure your %1$s. %2$s</string>
+    <string name="ai_all_vitals_complete">All measurements complete. Here is your final analysis.</string>
+    <string name="ai_vital_recorded">Measurement for %1$s recorded. Please select the next vital sign to measure.</string>
+</resources>

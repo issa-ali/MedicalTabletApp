@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Medical Tablet</string>
+    <string name="scan_patient_title">مسح رمز المريض</string>
+    <string name="scan_patient_desc">يرجى وضع رمز الـ QR الخاص بالمريض داخل الإطار لبدء الفحص.</string>
+    <string name="verifying_patient">جاري التحقق من بيانات المريض...</string>
+    <string name="patient_not_found">لم يتم العثور على المريض. يرجى المحاولة مرة أخرى.</string>
+    <string name="start_consultation">بدء الفحص الطبي</string>
+    <string name="welcome_doctor">مرحباً بك، دكتور</string>
+    <string name="session_timer">مدة الجلسة: %s</string>
+    <string name="end_session">إنهاء الجلسة</string>
+    <string name="measuring_vitals">جاري قياس المؤشرات الحيوية...</string>
+    <string name="heart_rate">نبض القلب</string>
+    <string name="blood_oxygen">نسبة الأكسجين</string>
+    <string name="temperature">درجة الحرارة</string>
+    <string name="analysis_report">تقرير التحليل الطبي</string>
+    <string name="detected_conditions">الحالات المكتشفة</string>
+    <string name="recommendations">التوصيات الطبية</string>
+    <string name="prescribed_medicine">الدواء المقترح</string>
+    <string name="pharmacy_store">متجر الصيدلية الذكي</string>
+    <string name="purchase_success">تمت عملية الشراء بنجاح!</string>
+    <string name="insufficient_balance">الرصيد غير كافٍ.</string>
+    <string name="server_config">إعدادات الخادم</string>
+    <string name="save_settings">حفظ الإعدادات</string>
+</resources>

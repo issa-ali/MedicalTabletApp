@@ -1,0 +1,174 @@
+package com.example.androidapp.ui.screens
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.media.MediaPlayer
+import android.util.Size
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import com.example.androidapp.ui.dialogs.ServerConfigurationDialog
+import com.example.androidapp.ui.theme.DarkBackground
+import com.example.androidapp.ui.theme.NeonCyan
+import com.example.androidapp.ui.theme.Teal
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
+import java.util.concurrent.Executors
+import androidx.compose.ui.geometry.Size as ComposeSize
+
+@Composable
+fun ScanPatientScreen(
+    onScanSuccess: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    
+    var showSettingsDialog by remember { mutableStateOf(false) }
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    
+    var isScanning by remember { mutableStateOf(false) }
+    // Scale Animation for pulsing
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+    
+    // Glow pulsing
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow"
+    )
+    
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(300.dp)
+            .clickable { onClick() }
+    ) {
+        // Outer Glow
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .scale(scale)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(NeonCyan.copy(alpha = glowAlpha * 0.5f), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+        
+        // Glassy Circle Container
+        Box(
+            modifier = Modifier
+                .size(220.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.05f),
+                    shape = CircleShape
+                )
+                .border(2.dp, Brush.linearGradient(listOf(Color.White.copy(alpha = 0.5f), Color.Transparent)), CircleShape)
+        )
+        
+        // Content
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.QrCodeScanner,
+                contentDescription = "Scan QR",
+                tint = NeonCyan,
+                modifier = Modifier.size(64.dp)
+            )
+            
+            Text(
+                text = "Scan Patient\nQR Code",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+        }
+        
+        // Rotating Scanning Ring
+        val rotation by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(4000, easing = LinearEasing)
+            ),
+            label = "ring_rotation"
+        )
+        
+        Canvas(modifier = Modifier.size(240.dp)) {
+             rotate(rotation) {
+                 drawArc(
+                    brush = Brush.sweepGradient(
+                        colors = listOf(Color.Transparent, NeonCyan, Color.Transparent)
+                    ),
+                    startAngle = -90f,
+                    sweepAngle = 180f,
+                    useCenter = false,
+                    style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                 )
+             }
+        }
+    }
+}
