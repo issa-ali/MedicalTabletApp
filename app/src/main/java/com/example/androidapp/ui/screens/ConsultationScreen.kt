@@ -162,7 +162,7 @@ fun ConsultationScreen(
                                     medicine = recommendedMedicine,
                                     userBalance = userBalance,
                                     isBuyingInProgress = false,
-                                    onPurchaseSuccess = { newBalance -> /* ViewModel should handle this, but for now: */ },
+                                    onPurchaseSuccess = { newBalance -> viewModel.updateBalance(newBalance) },
                                     onComplete = onConsultationComplete
                                 )
                             }

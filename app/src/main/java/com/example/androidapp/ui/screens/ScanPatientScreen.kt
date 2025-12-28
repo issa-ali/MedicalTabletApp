@@ -167,7 +167,6 @@ fun ScanPatientScreen(
                                             val qrContent = barcodes.first().rawValue ?: ""
                                             // Ensure UI operations run on Main Thread
                                             android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                                playSound("scan_success")
                                                 onScanSuccess(qrContent)
                                             }
                                             isScanning = false
@@ -296,60 +295,6 @@ fun ScanPatientScreen(
         
 
     }
-}
-
-@Composable
-fun VideoBackground() {
-    AndroidView(
-        factory = { ctx ->
-            android.view.TextureView(ctx).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                
-                surfaceTextureListener = object : android.view.TextureView.SurfaceTextureListener {
-                    override fun onSurfaceTextureAvailable(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {
-                        val mediaPlayer = MediaPlayer.create(ctx, android.net.Uri.parse("android.resource://${ctx.packageName}/raw/background_video"))
-                        mediaPlayer.setSurface(android.view.Surface(surface))
-                        mediaPlayer.isLooping = true
-                        mediaPlayer.setVolume(0f, 0f)
-                        
-                        mediaPlayer.setOnVideoSizeChangedListener { mp, videoWidth, videoHeight ->
-                            if (width > 0 && height > 0 && videoWidth > 0 && videoHeight > 0) {
-                                val viewRatio = width.toFloat() / height
-                                val videoRatio = videoWidth.toFloat() / videoHeight
-                                
-                                val matrix = android.graphics.Matrix()
-                                var scaleX = 1f
-                                var scaleY = 1f
-                                
-                                if (viewRatio > videoRatio) {
-                                    // View is wider than video -> Scale Y to match width
-                                    scaleY = viewRatio / videoRatio
-                                } else {
-                                    // View is taller than video -> Scale X to match height
-                                    scaleX = videoRatio / viewRatio
-                                }
-                                
-                                matrix.setScale(scaleX, scaleY, width / 2f, height / 2f)
-                                setTransform(matrix)
-                            }
-                        }
-                        
-                        mediaPlayer.start()
-                    }
-
-                    override fun onSurfaceTextureSizeChanged(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {}
-                    override fun onSurfaceTextureDestroyed(surface: android.graphics.SurfaceTexture): Boolean = true
-                    override fun onSurfaceTextureUpdated(surface: android.graphics.SurfaceTexture) {}
-                }
-            }
-        },
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    )
 }
 
 @Composable

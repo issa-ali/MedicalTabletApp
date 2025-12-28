@@ -166,8 +166,8 @@ class ConsultationViewModel(application: Application) : AndroidViewModel(applica
 
                 if (isComplete) {
                     setPhase(ConsultationPhase.VITALS)
-                    // Egyptian: "تمام يا بطل. دلوقتي هنبدأ نقيس العلامات الحيوية."
-                    voiceManager.speak("تمام يا بطل. يلا بينا نقيس العلامات الحيوية دلوقتى. ✨", waitForCompletion = true, onAudioStart = { _isAiSpeaking.value = true })
+                    // Professional: "Perfect. Now we will proceed to measure vital signs."
+                    voiceManager.speak("تمام جداً. دلوقتي هنبدأ نقيس العلامات الحيوية.", waitForCompletion = true, onAudioStart = { _isAiSpeaking.value = true })
                     _isAiSpeaking.value = false
                 }
             } catch (e: Exception) {
@@ -239,6 +239,14 @@ class ConsultationViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun completeMeasurement(id: String, value: String) {
+        if (id == "trigger_report") {
+             viewModelScope.launch {
+                voiceManager.speak("تمام جداً. كل القراءات كويسة. أنا دلوقتى بطلع التقرير النهائى.", waitForCompletion = true)
+            }
+            setPhase(ConsultationPhase.REPORT)
+            return
+        }
+
         _selectedVital.value = null
         val index = vitals.indexOfFirst { it.id == id }
         if (index != -1) {
@@ -246,14 +254,12 @@ class ConsultationViewModel(application: Application) : AndroidViewModel(applica
             vitalsViewModel.stopSensors()
             com.example.androidapp.data.audio.SoundManager.playSuccess()
             
-            // Auto-advance if all vitals are done? Let's check.
-            if (vitals.all { it.value != null }) {
-                viewModelScope.launch {
-                    voiceManager.speak("تمام جداً. كل القراءات كويسة. أنا دلوقتى بطلع التقرير النهائى.", waitForCompletion = true)
-                }
-                setPhase(ConsultationPhase.REPORT)
-            }
+            // Auto-advance removed for better UX. Patient now clicks "Generate Report" manually.
         }
+    }
+
+    fun updateBalance(newBalance: Float) {
+        _userBalance.value = newBalance
     }
 
     fun connectBluetooth() {

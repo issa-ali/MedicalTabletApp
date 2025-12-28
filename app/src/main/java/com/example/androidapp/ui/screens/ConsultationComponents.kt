@@ -105,7 +105,7 @@ fun WelcomeWidget(userName: String, hazeState: HazeState? = null, onStart: () ->
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Hello, $userName. 👋", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.SemiBold)
+        Text("Patient Consultation: $userName", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.SemiBold)
         TypingText("I am your AI Medical Assistant. I will guide you through a comprehensive health assessment. Please state your symptoms below. 👇", style = MaterialTheme.typography.bodyLarge, color = Color.White.copy(0.75f))
         Spacer(Modifier.height(8.dp))
         Box(
@@ -325,7 +325,22 @@ fun VitalsWidget(
             }
             }
         } else {
-            VitalsList(vitals = vitals, selectedVital = selectedVital, onSelect = onSelectVital)
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                VitalsList(vitals = vitals, selectedVital = selectedVital, onSelect = onSelectVital, modifier = Modifier.weight(1f))
+                
+                // Show "Generate Report" button only when all vitals are measured
+                if (vitals.all { it.value != null }) {
+                    Button(
+                        onClick = { onMeasureComplete("trigger_report", "confirmed") }, // We use this callback to advance
+                        modifier = Modifier.fillMaxWidth().height(60.dp).neonGlow(NeonTeal),
+                        colors = ButtonDefaults.buttonColors(containerColor = NeonTeal)
+                    ) {
+                        Icon(Icons.Default.Analytics, null, tint = Color.Black)
+                        Spacer(Modifier.width(12.dp))
+                        Text("ANALYZE & GENERATE REPORT", color = Color.Black, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
         }
     }
 }
@@ -334,11 +349,12 @@ fun VitalsWidget(
 fun VitalsList(
     vitals: List<VitalSign>,
     selectedVital: VitalSign?,
-    onSelect: (VitalSign) -> Unit
+    onSelect: (VitalSign) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) {
         items(vitals, key = { it.id }) { vital ->
             val isSelected = selectedVital?.id == vital.id
@@ -397,7 +413,7 @@ fun ReportWidget(
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
                 Text(
-                    "📋 CLINICAL TL;DR: $userName",
+                    "📋 CLINICAL SUMMARY: $userName",
                     style = MaterialTheme.typography.headlineMedium,
                     color = NeonTeal,
                     fontWeight = FontWeight.Bold
@@ -463,13 +479,7 @@ fun PharmacyWidget(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("YOUR PRESCRIBED TREATMENT", style = MaterialTheme.typography.headlineSmall, color = NeonPurple, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(NeonTeal.copy(0.2f), RoundedCornerShape(12.dp))
-                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                        ) {
-                            Text("STUDENT DISCOUNT APPLIED", color = NeonTeal, style = MaterialTheme.typography.labelSmall)
-                        }
+                        /* Removed student discount badge */
                     }
                     
                     Row(
